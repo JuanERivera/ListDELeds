@@ -28,6 +28,18 @@ public class ListDE {
 
         size++;
     }
+    public List<Led> print()  {
+        ledList.clear();
+
+        NodeDE temp = head;
+
+        while (temp != null) {
+            ledList.add(temp.getData());
+            temp = temp.getNext();
+        }
+
+        return ledList;
+    }
 
     public void addToStart(Led led) {
         NodeDE newNode = new NodeDE(led);
@@ -115,7 +127,14 @@ Actualización de la variable temporal: finalmente, se actualiza la variable tem
             current = current.getNext();
         }
     }
-
+/*
+Creo el asistente que recorra la lista.
+compruebo que la lista no este vacia. si no esta vacia entonces
+Empiezo e recorrer los leds mediante un ciclo.
+Si encuentro el led con la id proporcionada anteriormente lo defino como true
+salgo del bucle.
+paso al siguiente nodo
+ */
     public void turnOnByid(int id) {
         NodeDE current = head;
         // Empezar en el primer nodo de la lista
@@ -135,7 +154,15 @@ Actualización de la variable temporal: finalmente, se actualiza la variable tem
             // Avanzar al siguiente nodo
         }
     }
+    /*
+    Creo el asistente que recorra la lista.
+    compruebo que la lista no este vacia. si no esta vacia entonces
+    Empiezo e recorrer los leds mediante un ciclo.
+    Si encuentro el led con la id proporcionada anteriormente lo defino como false
+    salgo del bucle.
+    paso al siguiente nodo
 
+     */
     public void turnOffById(int id) {
         NodeDE current = head;
         // Empezar en el primer nodo de la lista
@@ -155,48 +182,112 @@ Actualización de la variable temporal: finalmente, se actualiza la variable tem
             // Avanzar al siguiente nodo
         }
     }
+    /*
+    Verificar si la lista está vacía. Si es así, lanzar una excepción.
+    Crear una nueva lista vacía llamada listCP para almacenar los cambios.
+    Inicializar un nodo temporal llamado temp con la cabeza de la lista original.
+    Calcular el punto de inicio para el encendido y apagado de los elementos.
+    Si la lista tiene un número impar de elementos, el punto de inicio será la mitad más uno.
+    Si la lista tiene un número par de elementos, el punto de inicio será la mitad.
+    Iniciar un bucle mientras el nodo temporal temp no sea nulo.
+    Dentro del bucle, verificar si el contador es igual al punto de inicio.
+    Si es así, guardar una referencia al siguiente nodo en tempNext.
+    Encender el elemento asociado al nodo temporal estableciendo su estado en true.
+    Registrar la fecha de encendido del elemento asociado al nodo temporal con el valor actual de tiempo.
+    Luego, ejecutar otro bucle mientras el siguiente nodo después de tempNext no sea nulo.
+    Pausar la ejecución por 1 segundo.
+    Apagar los elementos asociados a temp y tempNext estableciendo su estado en false.
+    Registrar la fecha de apagado de los elementos asociados a temp y tempNext con el valor actual de tiempo.
+    Actualizar temp al nodo anterior y tempNext al siguiente nodo.
+    Encender nuevamente los elementos asociados a temp y tempNext.
+    Registrar la fecha de encendido de los elementos asociados a temp y tempNext con el valor actual de tiempo.
+    Una vez finalizado el bucle interno, salir del bucle principal.
+    Incrementar el contador y avanzar temp al siguiente nodo de la lista original.
+    Actualizar la cabeza de la lista original con la cabeza de la lista modificada listCP.
+     */
 
     public void turnOnExtremesBytheHalf() {
-        NodeDE temp = head;
-        NodeDE tempEnd = tail;
 
-        while (temp != null && tempEnd != null && temp != tempEnd && temp.getPrevious() != tempEnd) {
-            temp.getData().setState(true);
-            temp.getData().setDateon(LocalTime.now());
-            tempEnd.getData().setState(true);
-            tempEnd.getData().setDateon(LocalTime.now());
+            if (head != null) {
+                NodeDE temp = head;
+                int count = 1;
+                int start;
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                if ((size % 2) != 0) {
+                    start = (size / 2) + 1;
+
+                    while (temp != null) {
+                        if (count == start) {
+                            NodeDE tempNext = temp;
+                            temp.getData().setState(true);
+                            temp.getData().setDateon(LocalTime.from(LocalDateTime.now()));
+
+                            while (tempNext.getNext() != null) {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                temp.getData().setState(false);
+                                temp.getData().setDateoff(LocalTime.from(LocalDateTime.now()));
+                                tempNext.getData().setState(false);
+                                tempNext.getData().setDateoff(LocalTime.from(LocalDateTime.now()));
+
+                                temp = temp.getPrevious();
+                                tempNext = tempNext.getNext();
+
+                                temp.getData().setState(true);
+                                temp.getData().setDateon(LocalTime.from(LocalDateTime.now()));
+                                tempNext.getData().setState(true);
+                                tempNext.getData().setDateon(LocalTime.from(LocalDateTime.now()));
+                            }
+
+                            break;
+                        }
+                        count++;
+                        temp = temp.getNext();
+                    }
+                } else {
+                    start = size / 2;
+
+                    while (temp != null) {
+                        if (count == start) {
+                            NodeDE tempNext = temp.getNext();
+                            temp.getData().setState(true);
+                            temp.getData().setDateon(LocalTime.from(LocalDateTime.now()));
+                            tempNext.getData().setState(true);
+                            tempNext.getData().setDateon(LocalTime.from(LocalDateTime.now()));
+
+                            while (tempNext.getNext() != null) {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                temp.getData().setState(false);
+                                temp.getData().setDateoff(LocalTime.from(LocalDateTime.now()));
+                                tempNext.getData().setState(false);
+                                tempNext.getData().setDateoff(LocalTime.from(LocalDateTime.now()));
+
+                                temp = temp.getPrevious();
+                                tempNext = tempNext.getNext();
+
+                                temp.getData().setState(true);
+                                temp.getData().setDateon(LocalTime.from(LocalDateTime.now()));
+                                tempNext.getData().setState(true);
+                                tempNext.getData().setDateon(LocalTime.from(LocalDateTime.now()));
+                            }
+
+                            break;
+                        }
+                        count++;
+                        temp = temp.getNext();
+                    }
+                }
             }
-
-            temp.getData().setState(false);
-            temp.getData().setDateoff(LocalTime.now());
-            tempEnd.getData().setState(false);
-            tempEnd.getData().setDateoff(LocalTime.now());
-
-            temp = temp.getNext();
-            tempEnd = tempEnd.getPrevious();
         }
 
-        // Enciende el nodo del medio si la lista tiene un tamaño impar
-        if (temp == tempEnd) {
-            temp.getData().setState(true);
-            temp.getData().setDateon(LocalTime.now());
-            temp.getData().setDateoff(LocalTime.now().plusSeconds(1));
-        }
 
-        // Enciende los nodos de los extremos si la lista tiene un tamaño par
-        if (temp.getPrevious() == tempEnd) {
-            temp.getData().setState(true);
-            tempEnd.getData().setState(true);
-            temp.getData().setDateon(LocalTime.now());
-            tempEnd.getData().setDateon(LocalTime.now());
-            temp.getData().setDateoff(LocalTime.now().plusSeconds(1));
-            tempEnd.getData().setDateoff(LocalTime.now().plusSeconds(1));
-        }
     }
-
-}

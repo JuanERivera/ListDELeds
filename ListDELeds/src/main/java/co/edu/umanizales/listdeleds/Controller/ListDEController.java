@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 @RestController
 @RequestMapping(path ="ledsde")
 public class ListDEController {
@@ -17,62 +17,74 @@ public class ListDEController {
     @GetMapping
     public ResponseEntity<ResponseDTO> getLeds() {
         return new ResponseEntity<>(new ResponseDTO(
-                200, listDEService.getLeds(), null), HttpStatus.OK);
+                200, listDEService.getLeds().print(), null), HttpStatus.OK);
     }
 
-    @PostMapping("/addled")
-    public ResponseEntity<String> addLed(@RequestBody Led led) {
-        listDEService.getLeds().add(led);
-        return new ResponseEntity<>("LED added to the list", HttpStatus.OK);
+    @GetMapping(path = "/add/{id}")
+    public ResponseEntity<ResponseDTO> add(@PathVariable int id) {
+
+
+        listDEService.getLeds().add(new Led(id));
+
+
+        return new ResponseEntity<>(new ResponseDTO(
+                200, "Se ha adicionado un nuevo led",
+                null), HttpStatus.OK);
+
     }
-    @PostMapping("/addledtostart")
-    public ResponseEntity<String> addToStart(@RequestBody Led led) {
+
+    @GetMapping("/addledtostart/{id}")
+    public ResponseEntity<String> addToStart(@PathVariable int id) {
         try {
-            listDEService.getLeds().addToStart(led);
+            listDEService.getLeds().addToStart(new Led(id));
             return ResponseEntity.ok("Led added to start");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add led to start: " + e.getMessage());
         }
     }
-    @PostMapping("/leds/addToEnd")
-    public ResponseEntity<String> addToEnd(@RequestBody Led led) {
-        listDEService.getLeds().addToEnd(led);
+
+    @GetMapping("/addToEnd")
+    public ResponseEntity<String> addToEnd(@PathVariable int id) {
+        listDEService.getLeds().addToEnd(new Led(id));
         return new ResponseEntity<>("Led added to end of list", HttpStatus.OK);
     }
-    @PostMapping("/restart")
-    public ResponseEntity<String> restart() {
+
+    @GetMapping("/restart")
+    public ResponseEntity<ResponseDTO> restart() {
         listDEService.getLeds().restart();
-        return ResponseEntity.ok("All LEDs have been restarted.");
+        return new ResponseEntity<>(new ResponseDTO(200, "Se han reiniciado los leds", null), HttpStatus.OK);
     }
-    @PostMapping("/turnonleds")
-    public ResponseEntity<String> turnOn() {
+
+    @GetMapping("/turnonleds")
+    public ResponseEntity<ResponseDTO> turnOn() {
         try {
             listDEService.getLeds().turnOn();
-            return ResponseEntity.ok("All LEDs turned on successfully.");
+            return new ResponseEntity<>(new ResponseDTO(200, "Se han encendido los leds", null), HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error turning on LEDs: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
-    @PutMapping("/leds/off")
-    public ResponseEntity<String> turnOff() {
+
+    @GetMapping("/off")
+    public ResponseEntity<ResponseDTO> turnOff() {
         listDEService.getLeds().turnOff();
-        return ResponseEntity.ok("All LEDs have been turned off.");
+        return new ResponseEntity<>(new ResponseDTO(200, "Se han apagado los leds", null), HttpStatus.OK);
     }
-    @PostMapping("/leds/turn-on/{id}")
-    public ResponseEntity<String> turnOnById(@PathVariable int id) {
+
+    @GetMapping("/turn-on/{id}")
+    public ResponseEntity<ResponseDTO> turnOnById(@PathVariable int id) {
         listDEService.getLeds().turnOnByid(id);
-        return ResponseEntity.ok(String.format("LED with ID %d has been turned on.", id));
+        return new ResponseEntity<>(new ResponseDTO(200, "Se ha encendido el led con la id dada", null), HttpStatus.OK);
     }
-    @PostMapping("/leds/turn-on/{id}")
-    public ResponseEntity<String> turnOffById(@PathVariable int id) {
+    @GetMapping("/turn-off/{id}")
+    public ResponseEntity<ResponseDTO> turnOffById(@PathVariable int id) {
         listDEService.getLeds().turnOffById(id);
-        return ResponseEntity.ok(String.format("LED with ID %d has been turned off.", id));
+        return new ResponseEntity<>(new ResponseDTO(200, "Se ha apagado el led con la id dada", null), HttpStatus.OK);
     }
-    @PostMapping("/turnonextremesbythehalf")
-    public ResponseEntity<String> turnOnExtremesBytheHalf() {
+    @GetMapping("/turnonextremesbythehalf")
+    public ResponseEntity<ResponseDTO> turnOnExtremesBytheHalf() {
         listDEService.getLeds().turnOnExtremesBytheHalf();
-        return ResponseEntity.ok("All LEDs have been turned on and off.");
+        return new ResponseEntity<>(new ResponseDTO(200, "Se han dejado encendidos los leds de los extremos", null), HttpStatus.OK);
     }
 
 }
